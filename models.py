@@ -19,8 +19,6 @@ class User(db.Model):
 
     __tablename__ = "users"
 
-    # class methods go here
-
     id = db.Column(db.Integer,
                    primary_key = True,
                    autoincrement = True)
@@ -33,7 +31,11 @@ class User(db.Model):
                           nullable = False, 
                           default = DEFAULT_IMAGE_URL)
     
-    posts = db.relationship("Post", backref = "user", cascade = "all, delete-orphan")
+    posts = db.relationship(
+        "Post", 
+        backref = "user",
+        cascade = "all, delete-orphan"
+    )
 
     @property
     def full_name(self):
@@ -73,4 +75,50 @@ class Post(db.Model):
     def friendly_date(self):
         """format date"""
         return self.created_at.strftime("%a %b %-d %Y, %-I:%M %p")
+
+
+# ------------------------------------------------------------------------ #
+# Blogly app pt 3                                                          #
+# ------------------------------------------------------------------------ #
+
+
+class PostTag(db.Model):
+    """Tag on a post."""
+
+    __tablename__ = "posts_tags"
+
+    post_id = db.Column(
+        db.Integer,
+        db.ForeignKey('posts.id'),
+        primary_key = True
+    )
     
+    tag_id = db.Column(
+        db.Integer,
+        db.ForeignKey('tags.id'),
+        primary_key = True
+    )
+
+
+class Tag(db.Model):
+    """Tag that can be added to posts."""
+
+    __tablename__ = 'tags'
+
+    id = db.Column(
+        db.Integer,
+        primary_key = True
+    )
+    
+    name = db.Column(
+        db.Text,
+        nullable = False,
+        unique = True
+    )
+
+    posts = db.relationship(
+        'Post',
+        secondary="posts_tags",
+        # cascade="all,delete",
+        backref="tags",
+    )
