@@ -1,6 +1,8 @@
 """Blogly application."""
 
-from flask import Flask, request, render_template, redirect
+# homepage.html, 404.html,
+
+from flask import Flask, request, render_template, redirect, flash
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Post
 
@@ -18,19 +20,29 @@ with app.app_context():
     connect_db(app)
     db.create_all()
 
+# Default routes
 
 @app.route('/')
 def home():
-    """Home page redirect"""
-    return redirect("/users")
+    """Home page"""
+    posts = Post.query.order_by(Post.created_at.desc()).limit(5).all()
+    return render_template("posts/homepage.html", posts=posts)
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """404 NOT FOUND Page"""
+    return render_template('404.html'), 404
+
+ 
+# USER routes:
 
 
 @app.route('/users')
 def users_list():
     """Show all users in db"""
-
     users = User.query.order_by(User.last_name, User.first_name).all()
-    return render_template('users/list.html', users=users)
+    return render_template('users/list.html', users = users)
 
 
 @app.route('/users/new', methods=["GET"])
@@ -50,6 +62,7 @@ def users_new():
 
     db.session.add(new_user)
     db.session.commit()
+    flash(f"User {new_user.full_name} added.")
 
     return redirect("/users")
 
@@ -79,6 +92,7 @@ def users_update(user_id):
 
     db.session.add(user)
     db.session.commit()
+    flash(f"User {user.full_name} edited")
 
     return redirect("/users")
 
@@ -90,6 +104,7 @@ def users_delete(user_id):
     user = User.query.get_or_404(user_id)
     db.session.delete(user)
     db.session.commit()
+    flash(f"User {user.full_name} deleted.")
 
     return redirect("/users")
 
