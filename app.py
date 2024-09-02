@@ -1,7 +1,5 @@
 """Blogly application."""
 
-# homepage.html, 404.html, new = form, index = list, 
-
 from flask import Flask, request, render_template, redirect, flash
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Post
