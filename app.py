@@ -10,10 +10,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = 'YtvJ x=\x92?\x8b8\xd0q\xfcFul\x11n\xe9y\x16\x8aa'
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+app.config['DEBUG_TB_PROFILER_ENABLED'] = True
 debug = DebugToolbarExtension(app)
+app.debug = True
 
-connect_db(app)
-db.create_all()
+with app.app_context():
+    connect_db(app)
+    db.create_all()
 
 
 @app.route('/')
@@ -25,8 +28,9 @@ def home():
 @app.route('/users')
 def users_list():
     """Show all users in db"""
-    users = User.query.order_by(User.first_name, User.last_name).all()
-    return render_template('users/list.html', users = users)
+    
+    users = User.query.order_by(User.last_name, User.first_name).all()
+    return render_template('users/list.html', users=users)
 
 
 @app.route('/users/new', methods=["GET"])
@@ -88,3 +92,10 @@ def users_delete(user_id):
     db.session.commit()
 
     return redirect("/users")
+
+
+# ------------------------------------------------------------------------ #
+# Blogly app pt 2                                                          #
+# ------------------------------------------------------------------------ #
+
+

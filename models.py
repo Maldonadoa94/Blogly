@@ -6,6 +6,11 @@ db = SQLAlchemy()
 
 DEFAULT_IMAGE_URL = "https://www.freeiconspng.com/uploads/icon-user-blue-symbol-people-person-generic--public-domain--21.png"
 
+def connect_db(app):
+    """Connect this database to provided Flask app"""
+    db.app = app
+    db.init_app(app)
+
 # Models
 
 class User(db.Model):
@@ -28,7 +33,10 @@ class User(db.Model):
                           default = DEFAULT_IMAGE_URL)
     
 
-def connect_db(app):
-    """Connect this database to provided Flask app"""
-    db.app = app
-    db.init_app(app)
+# ------------------------------------------------------------------------ #
+# Blogly app pt 2                                                          #
+# ------------------------------------------------------------------------ #
+
+
+
+    
